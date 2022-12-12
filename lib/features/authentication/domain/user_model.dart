@@ -1,5 +1,9 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+var userStateProvider = StateProvider<UserModel>((ref) => UserModel());
+
 class UserModel {
-  int? userId;
+  int userId = 0;
   int? userRoleId;
   String? fullName;
   String? userRoleName;
@@ -11,9 +15,9 @@ class UserModel {
 
   UserModel(
       {this.userId = 0,
-      this.userRoleId = 0,
+      this.userRoleId = 2,
       this.fullName = "",
-      this.userRoleName = "User",
+      this.userRoleName = "",
       this.forenames,
       this.surname,
       this.phone,

@@ -1,11 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:stoke_reviews_app/utils/api_error.dart';
+import '../../../utils/app_custom_error.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/constants/api_constants.dart';
 import 'package:stoke_reviews_app/features/authentication/data/auth_repository.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
-
-import '../../../utils/app_custom_error.dart';
 
 final authRepoImpl =
     Provider<AuthRepositoryImpl>((ref) => AuthRepositoryImpl());
@@ -26,27 +27,26 @@ class AuthRepositoryImpl extends AuthRepository {
           queryParameters: userCredentialsMap);
       return right(response.data as String);
     } on DioError catch (e) {
-      return left(onApiError(e));
+      return left(apiError(e));
     }
   }
 
   @override
-  Future<String> register({required UserModel userModel}) async {
-    await Future.delayed(Duration(seconds: 2));
-    return 'REGISTERED';
+  Future<Either<AppCustomError, String>> register(
+      {required UserModel userModel}) async {
+    print('BODY -> ${userModel.toJson()}');
+    try {
+      Response response = await dio.post(
+        ApiConstants.registerUser,
+        data: userModel.toJson(),
+      );
+
+      debugPrint('Registration result --> ${response.data}');
+      return right(response.data as String);
+    } on DioError catch (e) {
+      debugPrint('Registration error --> ${e}');
+
+      return left(apiError(e));
+    }
   }
-}
-
-AppCustomError onApiError(DioError e) {
-  AppCustomError message = AppCustomError('');
-
-  switch (e.response?.statusCode) {
-    case 401:
-      message = AppCustomError('Something went wrong, please try again');
-      break;
-    default:
-      message = AppCustomError('Something went wrong, please try again');
-  }
-
-  return message;
 }

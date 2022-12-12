@@ -19,8 +19,8 @@ class CustomTextField extends StatefulWidget {
   // BuildCounterWidget? buildCounterWidget;
   bool isNumberOnlyInput;
   Function? validator;
-  Function? onChanged;
-  Function? onTap;
+  Function(String value)? onChanged;
+  VoidCallback? onTap;
   TextEditingController? controller;
   List<TextInputFormatter>? inputFormatters;
   TextInputType keyboardType;
@@ -146,10 +146,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           textCapitalization: widget.textCapitalization,
           decoration: InputDecoration(
             helperText: widget.helperText,
-            hintText: widget.hintText != null ? widget.hintText : null,
+            hintText: widget.hintText,
             hintStyle: TextStyle(
               fontSize: 16,
-              color: Colors.white,
               fontWeight: FontWeight.w400,
             ),
             suffix: _getSuffixIcon(),
@@ -212,11 +211,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           obscureText: widget.obscureText,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,
-          focusNode: widget.focusNode != null ? widget.focusNode : null,
-          onTap: () {
-            if (widget.onTap != null) widget.onTap!();
-            setState(() {});
-          },
+          focusNode: widget.focusNode,
+          onTap: widget.onTap,
+          onChanged: widget.onChanged,
         ),
       ],
     );

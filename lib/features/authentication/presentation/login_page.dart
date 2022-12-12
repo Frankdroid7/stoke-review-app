@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:stoke_reviews_app/custom_widgets/action_button.dart';
-import 'package:stoke_reviews_app/custom_widgets/app_scaffold.dart';
+
 import 'package:stoke_reviews_app/features/authentication/application/authentication_service.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_login_model.dart';
 import 'package:stoke_reviews_app/route/app_router.gr.dart';
 
-import '../../../custom_widgets/custom_textfield.dart';
-import '../domain/user_states.dart';
+import '../../../appwide_custom_widgets/action_button.dart';
+import '../../../appwide_custom_widgets/app_scaffold.dart';
+import '../../../appwide_custom_widgets/custom_textfield.dart';
+import '../../../utils/api_call_enum.dart';
 
 class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
@@ -22,9 +23,9 @@ class LoginPage extends HookConsumerWidget {
 
     var authServiceState = ref.watch(authServiceStateNotifierProvider);
 
-    ref.listen<UserStates>(authServiceStateNotifierProvider,
+    ref.listen<ApiCallEnum>(authServiceStateNotifierProvider,
         (previous, current) {
-      if (current == UserStates.error) {
+      if (current == ApiCallEnum.error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(ref
@@ -32,7 +33,7 @@ class LoginPage extends HookConsumerWidget {
                 .errorMessage),
           ),
         );
-      } else if (current == UserStates.data) {
+      } else if (current == ApiCallEnum.success) {
         context.router.replaceAll([const HomeRoute()]);
       }
     });
@@ -71,13 +72,14 @@ class LoginPage extends HookConsumerWidget {
               controller: passwordCtrl,
             ),
             const SizedBox(height: 20),
-            authServiceState == UserStates.loading
+            authServiceState == ApiCallEnum.loading
                 ? const CircularProgressIndicator()
                 : ActionButton(
                     onPressed: () async {
                       ref
                           .read(authServiceStateNotifierProvider.notifier)
-                          .loginUsr(
+                          .loginUser(
+                              ref: ref,
                               email: emailCtrl.text,
                               password: passwordCtrl.text);
                     },

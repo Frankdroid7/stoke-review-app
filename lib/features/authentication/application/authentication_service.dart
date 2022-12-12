@@ -1,40 +1,59 @@
 import 'package:dartz/dartz.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:stoke_reviews_app/features/authentication/data/auth_repository_impl.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_login_model.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
-import 'package:stoke_reviews_app/features/authentication/domain/user_states.dart';
+import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 
 import '../../../utils/app_custom_error.dart';
 
 final authServiceStateNotifierProvider =
-    StateNotifierProvider<AuthServiceStateNotifier, UserStates>((ref) {
+    StateNotifierProvider<AuthServiceStateNotifier, ApiCallEnum>((ref) {
   return AuthServiceStateNotifier(ref.read(authRepoImpl));
 });
 
 final loadingStateProvider = StateProvider<bool>((ref) => false);
 
-class AuthServiceStateNotifier extends StateNotifier<UserStates> {
+class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
   final AuthRepositoryImpl _authRepositoryImpl;
-  AuthServiceStateNotifier(this._authRepositoryImpl) : super(UserStates.idle);
+  AuthServiceStateNotifier(this._authRepositoryImpl) : super(ApiCallEnum.idle);
 
   String errorMessage = '';
 
-  Future<String> registerUser({required UserModel userModel}) {
-    return _authRepositoryImpl.register(userModel: userModel);
+  registerUser({required UserModel userModel}) async {
+    state = ApiCallEnum.loading;
+
+    Either<AppCustomError, String> register =
+        await _authRepositoryImpl.register(userModel: userModel);
+    register.fold((appCustomError) {
+      errorMessage = appCustomError.error;
+      state = ApiCallEnum.error;
+    }, (data) {
+      state = ApiCallEnum.success;
+      return data;
+    });
   }
 
-  loginUsr({required String email, required String password}) async {
-    state = UserStates.loading;
+  loginUser(
+      {required WidgetRef ref,
+      required String email,
+      required String password}) async {
+    state = ApiCallEnum.loading;
 
     Either<AppCustomError, String> login =
         await _authRepositoryImpl.login(email: email, password: password);
     login.fold((appCustomError) {
       errorMessage = appCustomError.error;
-      state = UserStates.error;
-      print('ERR MSG -> $errorMessage');
+      state = ApiCallEnum.error;
     }, (data) {
-      state = UserStates.data;
+      state = ApiCallEnum.success;
+      Map<String, dynamic> payload = Jwt.parseJwt(data);
+      ref.read(userStateProvider.notifier).state = UserModel(
+        userId: int.parse(payload['nameid']),
+        fullName: payload['name'],
+      );
+      print('payload -> $payload');
       return data;
     });
   }
