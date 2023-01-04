@@ -1,10 +1,11 @@
 class PlacesModel {
   int placeId;
-  String? placeName;
+  String placeName;
   int? imageId;
   String? imageUrl;
   int? userId;
-  int rank = 1;
+  int rank;
+  String description;
   List<ReviewData> reviewDtos = [];
 
   PlacesModel(
@@ -13,6 +14,7 @@ class PlacesModel {
       required this.placeName,
       required this.imageId,
       required this.imageUrl,
+      required this.description,
       required this.reviewDtos});
 
   factory PlacesModel.emptyData() {
@@ -22,6 +24,7 @@ class PlacesModel {
       placeName: '',
       imageId: 0,
       imageUrl: '',
+      description: '',
       reviewDtos: [],
     );
   }
@@ -30,11 +33,12 @@ class PlacesModel {
     List _reviewDtos = json['reviewDtos'];
 
     return PlacesModel(
-      rank: json['rank'],
-      placeId: json['placeId'],
-      placeName: json['placeName'],
-      imageId: json['imageId'],
-      imageUrl: json['imageUrl'],
+      rank: json['rank'] ?? 0,
+      placeId: json['placeId'] ?? 0,
+      description: json['description'] ?? '',
+      placeName: json['placeName'] ?? '',
+      imageId: json['imageId'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
       reviewDtos: _reviewDtos.map((e) => ReviewData.fromJson(e)).toList(),
     );
   }
@@ -52,11 +56,21 @@ class PlacesModel {
 class ReviewData {
   int reviewId;
   String reviewText;
+  String reviewUserName;
 
-  ReviewData({required this.reviewId, required this.reviewText});
+  ReviewData(
+      {required this.reviewUserName,
+      required this.reviewId,
+      required this.reviewText});
+
+  factory ReviewData.emptyData() {
+    return ReviewData(reviewUserName: '', reviewId: 0, reviewText: '');
+  }
 
   factory ReviewData.fromJson(Map<String, dynamic> json) {
     return ReviewData(
-        reviewId: json['reviewId'], reviewText: json['reviewText']);
+        reviewUserName: json['reviewUserName'],
+        reviewId: json['reviewId'],
+        reviewText: json['reviewText']);
   }
 }

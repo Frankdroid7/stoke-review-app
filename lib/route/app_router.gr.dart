@@ -11,58 +11,65 @@
 // ignore_for_file: type=lint
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i7;
-import 'package:flutter/material.dart' as _i8;
+import 'package:auto_route/auto_route.dart' as _i8;
+import 'package:flutter/material.dart' as _i9;
 
 import '../features/authentication/presentation/login_page.dart' as _i2;
-import '../features/authentication/presentation/onboarding_page.dart' as _i4;
-import '../features/authentication/presentation/registration_page.dart' as _i5;
-import '../features/ranked_places/domain/places_model.dart' as _i9;
+import '../features/authentication/presentation/onboarding_page.dart' as _i5;
+import '../features/authentication/presentation/registration_page.dart' as _i6;
+import '../features/ranked_places/domain/places_model.dart' as _i10;
 import '../features/ranked_places/presentation/home_page.dart' as _i1;
-import '../features/review_and_comment/presentation/review_page.dart' as _i6;
-import '../features/search/presentation/search_page.dart' as _i3;
+import '../features/review_and_comment/presentation/pdf_view.dart' as _i3;
+import '../features/review_and_comment/presentation/review_page.dart' as _i7;
+import '../features/search/presentation/search_page.dart' as _i4;
 
-class AppRouter extends _i7.RootStackRouter {
-  AppRouter([_i8.GlobalKey<_i8.NavigatorState>? navigatorKey])
+class AppRouter extends _i8.RootStackRouter {
+  AppRouter([_i9.GlobalKey<_i9.NavigatorState>? navigatorKey])
       : super(navigatorKey);
 
   @override
-  final Map<String, _i7.PageFactory> pagesMap = {
+  final Map<String, _i8.PageFactory> pagesMap = {
     HomeRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i8.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i1.HomePage(),
       );
     },
     LoginRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i8.MaterialPageX<dynamic>(
         routeData: routeData,
         child: const _i2.LoginPage(),
       );
     },
-    SearchRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+    PdfView.name: (routeData) {
+      return _i8.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i3.SearchPage(),
+        child: const _i3.PdfView(),
+      );
+    },
+    SearchRoute.name: (routeData) {
+      return _i8.MaterialPageX<dynamic>(
+        routeData: routeData,
+        child: const _i4.SearchPage(),
       );
     },
     OnboardingRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i8.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i4.OnboardingPage(),
+        child: const _i5.OnboardingPage(),
       );
     },
     RegistrationRoute.name: (routeData) {
-      return _i7.MaterialPageX<dynamic>(
+      return _i8.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: const _i5.RegistrationPage(),
+        child: const _i6.RegistrationPage(),
       );
     },
     ReviewRoute.name: (routeData) {
       final args = routeData.argsAs<ReviewRouteArgs>();
-      return _i7.MaterialPageX<dynamic>(
+      return _i8.MaterialPageX<dynamic>(
         routeData: routeData,
-        child: _i6.ReviewPage(
+        child: _i7.ReviewPage(
           key: args.key,
           placesModel: args.placesModel,
         ),
@@ -71,28 +78,32 @@ class AppRouter extends _i7.RootStackRouter {
   };
 
   @override
-  List<_i7.RouteConfig> get routes => [
-        _i7.RouteConfig(
+  List<_i8.RouteConfig> get routes => [
+        _i8.RouteConfig(
           HomeRoute.name,
-          path: '/',
+          path: '/home-page',
         ),
-        _i7.RouteConfig(
+        _i8.RouteConfig(
           LoginRoute.name,
           path: '/login-page',
         ),
-        _i7.RouteConfig(
+        _i8.RouteConfig(
+          PdfView.name,
+          path: '/',
+        ),
+        _i8.RouteConfig(
           SearchRoute.name,
           path: '/search-page',
         ),
-        _i7.RouteConfig(
+        _i8.RouteConfig(
           OnboardingRoute.name,
           path: '/onboarding-page',
         ),
-        _i7.RouteConfig(
+        _i8.RouteConfig(
           RegistrationRoute.name,
           path: '/registration-page',
         ),
-        _i7.RouteConfig(
+        _i8.RouteConfig(
           ReviewRoute.name,
           path: '/review-page',
         ),
@@ -101,11 +112,11 @@ class AppRouter extends _i7.RootStackRouter {
 
 /// generated route for
 /// [_i1.HomePage]
-class HomeRoute extends _i7.PageRouteInfo<void> {
+class HomeRoute extends _i8.PageRouteInfo<void> {
   const HomeRoute()
       : super(
           HomeRoute.name,
-          path: '/',
+          path: '/home-page',
         );
 
   static const String name = 'HomeRoute';
@@ -113,7 +124,7 @@ class HomeRoute extends _i7.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.LoginPage]
-class LoginRoute extends _i7.PageRouteInfo<void> {
+class LoginRoute extends _i8.PageRouteInfo<void> {
   const LoginRoute()
       : super(
           LoginRoute.name,
@@ -124,8 +135,20 @@ class LoginRoute extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i3.SearchPage]
-class SearchRoute extends _i7.PageRouteInfo<void> {
+/// [_i3.PdfView]
+class PdfView extends _i8.PageRouteInfo<void> {
+  const PdfView()
+      : super(
+          PdfView.name,
+          path: '/',
+        );
+
+  static const String name = 'PdfView';
+}
+
+/// generated route for
+/// [_i4.SearchPage]
+class SearchRoute extends _i8.PageRouteInfo<void> {
   const SearchRoute()
       : super(
           SearchRoute.name,
@@ -136,8 +159,8 @@ class SearchRoute extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i4.OnboardingPage]
-class OnboardingRoute extends _i7.PageRouteInfo<void> {
+/// [_i5.OnboardingPage]
+class OnboardingRoute extends _i8.PageRouteInfo<void> {
   const OnboardingRoute()
       : super(
           OnboardingRoute.name,
@@ -148,8 +171,8 @@ class OnboardingRoute extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i5.RegistrationPage]
-class RegistrationRoute extends _i7.PageRouteInfo<void> {
+/// [_i6.RegistrationPage]
+class RegistrationRoute extends _i8.PageRouteInfo<void> {
   const RegistrationRoute()
       : super(
           RegistrationRoute.name,
@@ -160,11 +183,11 @@ class RegistrationRoute extends _i7.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i6.ReviewPage]
-class ReviewRoute extends _i7.PageRouteInfo<ReviewRouteArgs> {
+/// [_i7.ReviewPage]
+class ReviewRoute extends _i8.PageRouteInfo<ReviewRouteArgs> {
   ReviewRoute({
-    _i8.Key? key,
-    required _i9.PlacesModel placesModel,
+    _i9.Key? key,
+    required _i10.PlacesModel placesModel,
   }) : super(
           ReviewRoute.name,
           path: '/review-page',
@@ -183,9 +206,9 @@ class ReviewRouteArgs {
     required this.placesModel,
   });
 
-  final _i8.Key? key;
+  final _i9.Key? key;
 
-  final _i9.PlacesModel placesModel;
+  final _i10.PlacesModel placesModel;
 
   @override
   String toString() {

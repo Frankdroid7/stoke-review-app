@@ -1,4 +1,4 @@
 class AppCustomError {
-  String error;
-  AppCustomError(this.error);
+  String errorMsg;
+  AppCustomError(this.errorMsg);
 }

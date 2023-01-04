@@ -4,53 +4,63 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:stoke_reviews_app/appwide_custom_widgets/action_button.dart';
-import 'package:stoke_reviews_app/appwide_custom_widgets/app_scaffold.dart';
-import 'package:stoke_reviews_app/appwide_custom_widgets/custom_textfield.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
+import 'package:stoke_reviews_app/features/review_and_comment/application/review_service.dart';
+import 'package:stoke_reviews_app/features/review_and_comment/domain/rank_model.dart';
+import 'package:stoke_reviews_app/features/review_and_comment/domain/review_model.dart';
+import 'package:stoke_reviews_app/shared_widgets/app_scaffold.dart';
+import 'package:stoke_reviews_app/shared_widgets/custom_textfield.dart';
+import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../constants/app_constants.dart';
+import '../../../exports/exports.dart';
+import '../../../shared_widgets/action_button.dart';
 import 'custom_widgets/review_list_tile.dart';
 
-class ReviewPage extends StatefulWidget {
+class ReviewPage extends HookConsumerWidget {
   final PlacesModel placesModel;
-  const ReviewPage({Key? key, required this.placesModel}) : super(key: key);
+
+  double reviewRating = 0.0;
+
+  ReviewPage({Key? key, required this.placesModel}) : super(key: key);
 
   @override
-  State<ReviewPage> createState() => _ReviewPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    var reviewTextEditingCtrl = useTextEditingController();
+    ValueNotifier<bool> showPostReviewWidget = useState(false);
+    ApiCallEnum reviewServiceState =
+        ref.read(reviewServiceStateNotifierProvider);
+    ReviewService reviewService =
+        ref.read(reviewServiceStateNotifierProvider.notifier);
 
-class _ReviewPageState extends State<ReviewPage> {
-  late VideoPlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.network(
-        'https://thumbs.gfycat.com/AccurateFemaleJavalina.webp');
-
-    _controller.addListener(() {
-      setState(() {});
+    ref.listen<ApiCallEnum>(reviewServiceStateNotifierProvider,
+        (previous, current) {
+      if (current == ApiCallEnum.success) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+          'Review Posted',
+          style: TextStyle(color: Colors.blue),
+        )));
+        showPostReviewWidget.value = false;
+      } else if (current == ApiCallEnum.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+            reviewService.errorMsg,
+            style: const TextStyle(
+              color: Colors.red,
+            ),
+          )),
+        );
+      }
     });
-    _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
-  }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  bool showPostReviewWidget = false;
-  @override
-  Widget build(BuildContext context) {
     return AppScaffold(
       appBar: AppBar(
         title: const Text('Review page'),
@@ -58,20 +68,12 @@ class _ReviewPageState extends State<ReviewPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: 400, child: VideoPlayer(_controller)),
-          TextButton(
-            onPressed: () {
-              _controller.pause();
-            },
-            child: Text('PAUSE'),
-          ),
           Hero(
             tag: 'placeImg',
             child: Image.network(
-              (widget.placesModel.imageUrl == null ||
-                      widget.placesModel.imageUrl!.isEmpty)
+              (placesModel.imageUrl == null || placesModel.imageUrl!.isEmpty)
                   ? stokeOnTrentPlaceHolderImage
-                  : widget.placesModel.imageUrl!,
+                  : placesModel.imageUrl!,
               height: 140,
               fit: BoxFit.fitWidth,
               errorBuilder: (context, _, __) {
@@ -87,20 +89,28 @@ class _ReviewPageState extends State<ReviewPage> {
           Hero(
             tag: 'placesText',
             child: Text(
-              widget.placesModel.placeName ?? '',
+              placesModel.placeName,
               style: const TextStyle(fontSize: 22),
             ),
           ),
-          const SizedBox(height: 10),
+          placesModel.description.isEmpty
+              ? const SizedBox.shrink()
+              : Text(
+                  placesModel.description,
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+          placesModel.description.isEmpty
+              ? const SizedBox.shrink()
+              : const SizedBox(height: 10),
           const Divider(thickness: 2),
           InkWell(
             onTap: () {
-              setState(() {
-                showPostReviewWidget = !showPostReviewWidget;
-              });
+              showPostReviewWidget.value = !showPostReviewWidget.value;
             },
             child: const Text(
-              'Post review',
+              'Post a review',
               textAlign: TextAlign.right,
               style: TextStyle(
                 color: Colors.blue,
@@ -109,7 +119,7 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
           ),
           Visibility(
-            visible: showPostReviewWidget,
+            visible: showPostReviewWidget.value,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -121,14 +131,36 @@ class _ReviewPageState extends State<ReviewPage> {
                     color: Colors.amber,
                   ),
                   onRatingUpdate: (rating) {
-                    print(rating);
+                    reviewRating = rating;
                   },
                 ),
                 CustomTextField(
                   maxLines: 5,
+                  controller: reviewTextEditingCtrl,
                   hintText: '\nWrite your review...',
                 ),
-                ActionButton(onPressed: () {}, title: 'Post Review'),
+                reviewServiceState == ApiCallEnum.loading
+                    ? const CircularProgressIndicator()
+                    : ActionButton(
+                        onPressed: () {
+                          if (reviewRating > 0.0) {
+                            RankModel rankModel = RankModel(
+                              placeId: placesModel.placeId,
+                              placeName: placesModel.placeName,
+                              ranking: reviewRating.toInt(),
+                            );
+                            reviewService.postRating(rankModel: rankModel);
+                          }
+                          if (reviewTextEditingCtrl.text.isNotEmpty) {
+                            ReviewModel reviewModel = ReviewModel(
+                                placeName: placesModel.placeName,
+                                placeId: placesModel.placeId,
+                                reviewText: reviewTextEditingCtrl.text);
+                            reviewService.postReview(reviewModel: reviewModel);
+                          }
+                        },
+                        title: 'Post Review',
+                      ),
               ],
             ),
           ),
@@ -139,83 +171,24 @@ class _ReviewPageState extends State<ReviewPage> {
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: ListView.builder(
-                itemCount: widget.placesModel.reviewDtos.length,
-                itemBuilder: (context, index) {
-                  return ReviewListTile(
-                    placesModel: widget.placesModel,
-                    reviewData: widget.placesModel.reviewDtos[index],
-                  );
-                }),
-          ),
-          // PDFView(
-          //   filePath: path,
-          //   enableSwipe: true,
-          //   swipeHorizontal: true,
-          //   autoSpacing: false,
-          //   pageFling: false,
-          //   onRender: (_pages) {
-          //     setState(() {
-          //       pages = _pages;
-          //       isReady = true;
-          //     });
-          //   },
-          //   onError: (error) {
-          //     print(error.toString());
-          //   },
-          //   onPageError: (page, error) {
-          //     print('$page: ${error.toString()}');
-          //   },
-          //   onViewCreated: (PDFViewController pdfViewController) {
-          //     _controller.complete(pdfViewController);
-          //   },
-          //   onPageChanged: (int page, int total) {
-          //     print('page change: $page/$total');
-          //   },
-          // ),
-          TextButton(
-            onPressed: () {
-              getData();
-            },
-            child: Text('Get Data'),
+            child: placesModel.reviewDtos.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No reviews\nPost a review',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: placesModel.reviewDtos.length,
+                    itemBuilder: (context, index) {
+                      return ReviewListTile(
+                        placesModel: placesModel,
+                        reviewData: placesModel.reviewDtos[index],
+                      );
+                    }),
           ),
         ],
       ),
     );
   }
-}
-
-getData() async {
-  String url = "https://store_dev.smerp.io/smerp/api/sales/receipt";
-  var dio = Dio();
-
-  Response response = await dio.post(
-    url,
-    data: {
-      "params": {
-        "token": "5b7ed0fc0a1c47afb84f7c04aa1cccfd",
-        "sale_order_id": 142
-      }
-    },
-  );
-
-  print('GET DATA -> ${response.data['result']['report_url']}');
-  loadPdfFromNetwork(response.data['result']['report_url']);
-}
-
-Future<File> loadPdfFromNetwork(String url) async {
-  final response = await Dio().get(url);
-  String bytes = response.data;
-  print('BODY BYTES FROM URL -> $bytes');
-
-  return _storeFile(url, Uint8List.fromList(bytes.codeUnits));
-}
-
-Future<File> _storeFile(String url, List<int> bytes) async {
-  const filename = 'MyReciept';
-  final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/$filename.pdf');
-  await file.writeAsBytes(bytes, flush: false);
-  Share.shareXFiles([XFile(file.path)], text: 'Great picture');
-  return file;
 }

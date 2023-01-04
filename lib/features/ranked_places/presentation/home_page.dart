@@ -1,10 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
-import 'package:stoke_reviews_app/appwide_custom_widgets/custom_textfield.dart';
-import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
 import 'package:stoke_reviews_app/features/ranked_places/application/places_service.dart';
-import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
 import 'package:stoke_reviews_app/features/ranked_places/presentation/custom_widget/places_card.dart';
 import 'package:stoke_reviews_app/utils/app_custom_error.dart';
 
@@ -34,20 +31,25 @@ class HomePage extends HookConsumerWidget {
           getAllPlacesAsync.when(
             data: (placesModelList) {
               return Expanded(
-                child: ListView.builder(
-                  itemCount: placesModelList.length,
-                  itemBuilder: (context, index) {
-                    return PlacesCard(
-                      placesModel: placesModelList[index],
-                    );
+                child: RefreshIndicator(
+                  onRefresh: () {
+                    return ref.refresh(getAllPlacesFutureProvider.future);
                   },
+                  child: ListView.builder(
+                    itemCount: placesModelList.length,
+                    itemBuilder: (context, index) {
+                      return PlacesCard(
+                        placesModel: placesModelList[index],
+                      );
+                    },
+                  ),
                 ),
               );
             },
             error: (err, stack) {
               err as AppCustomError;
               return Text(
-                err.error,
+                err.errorMsg,
                 style: const TextStyle(
                   fontSize: 18,
                 ),

@@ -70,29 +70,29 @@ class PlacesCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.rate_review_rounded,
                               size: 16,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               placesModel.reviewDtos.length.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                               ),
                             ),
-                            SizedBox(width: 12),
-                            Icon(
+                            const SizedBox(width: 12),
+                            const Icon(
                               Icons.military_tech_outlined,
                               size: 16,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               placesModel.rank.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                               ),
                             ),

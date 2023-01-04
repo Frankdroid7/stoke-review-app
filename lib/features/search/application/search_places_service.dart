@@ -24,7 +24,7 @@ class SearchPlacesService extends StateNotifier<ApiCallEnum> {
       state = ApiCallEnum.success;
     }).catchError((err) {
       err as AppCustomError;
-      errorMessage = err.error;
+      errorMessage = err.errorMsg;
       state = ApiCallEnum.error;
     });
 

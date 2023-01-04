@@ -8,7 +8,7 @@ import '../data/comment_repository_impl.dart';
 import '../domain/comment_model.dart';
 
 var reviewDataStateProvider =
-    StateProvider<ReviewData>((ref) => ReviewData(reviewId: 0, reviewText: ''));
+    StateProvider<ReviewData>((ref) => ReviewData.emptyData());
 
 var placesModelStateProvider =
     StateProvider<PlacesModel>((ref) => PlacesModel.emptyData());

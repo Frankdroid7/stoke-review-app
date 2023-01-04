@@ -5,13 +5,15 @@ import 'package:stoke_reviews_app/features/review_and_comment/presentation/revie
 
 import '../features/authentication/presentation/onboarding_page.dart';
 import '../features/authentication/presentation/registration_page.dart';
+import '../features/review_and_comment/presentation/pdf_view.dart';
 import '../features/search/presentation/search_page.dart';
 
 @MaterialAutoRouter(
   replaceInRouteName: 'Page,Route',
   routes: <AutoRoute>[
-    AutoRoute(page: HomePage, initial: true),
+    AutoRoute(page: HomePage),
     AutoRoute(page: LoginPage),
+    AutoRoute(page: PdfView, initial: true),
     AutoRoute(page: SearchPage),
     AutoRoute(page: OnboardingPage),
     AutoRoute(page: RegistrationPage),

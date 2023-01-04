@@ -1,16 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:stoke_reviews_app/features/authentication/application/authentication_service.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
 import 'package:stoke_reviews_app/route/app_router.gr.dart';
 import 'package:stoke_reviews_app/utils/api_call_enum.dart';
-import '../../../appwide_custom_widgets/action_button.dart';
-import '../../../appwide_custom_widgets/app_scaffold.dart';
-import '../../../appwide_custom_widgets/custom_textfield.dart';
+
+import 'package:stoke_reviews_app/exports/exports.dart';
 
 class RegistrationPage extends HookConsumerWidget {
   const RegistrationPage({super.key});

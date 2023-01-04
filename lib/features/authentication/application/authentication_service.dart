@@ -27,7 +27,7 @@ class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
     Either<AppCustomError, String> register =
         await _authRepositoryImpl.register(userModel: userModel);
     register.fold((appCustomError) {
-      errorMessage = appCustomError.error;
+      errorMessage = appCustomError.errorMsg;
       state = ApiCallEnum.error;
     }, (data) {
       state = ApiCallEnum.success;
@@ -44,7 +44,7 @@ class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
     Either<AppCustomError, String> login =
         await _authRepositoryImpl.login(email: email, password: password);
     login.fold((appCustomError) {
-      errorMessage = appCustomError.error;
+      errorMessage = appCustomError.errorMsg;
       state = ApiCallEnum.error;
     }, (data) {
       state = ApiCallEnum.success;
@@ -53,7 +53,6 @@ class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
         userId: int.parse(payload['nameid']),
         fullName: payload['name'],
       );
-      print('payload -> $payload');
       return data;
     });
   }

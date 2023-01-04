@@ -10,4 +10,6 @@ class ApiConstants {
   static const String getCommentsByReviewId =
       '$baseUrl/Comment/GetCommentsByReview';
   static const String postComment = '$baseUrl/Comment/PostComment';
+  static const String postRating = '$baseUrl/Rank/PostRank';
+  static const String postReview = '$baseUrl/Review/PostReview';
 }

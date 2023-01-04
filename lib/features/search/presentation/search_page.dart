@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:stoke_reviews_app/appwide_custom_widgets/app_scaffold.dart';
-import 'package:stoke_reviews_app/appwide_custom_widgets/custom_textfield.dart';
+
+import 'package:stoke_reviews_app/exports/exports.dart';
+
 import 'package:stoke_reviews_app/features/search/application/search_places_service.dart';
 import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 

@@ -8,9 +8,9 @@ import 'package:stoke_reviews_app/features/authentication/application/authentica
 import 'package:stoke_reviews_app/features/authentication/domain/user_login_model.dart';
 import 'package:stoke_reviews_app/route/app_router.gr.dart';
 
-import '../../../appwide_custom_widgets/action_button.dart';
-import '../../../appwide_custom_widgets/app_scaffold.dart';
-import '../../../appwide_custom_widgets/custom_textfield.dart';
+import '../../../shared_widgets/action_button.dart';
+import '../../../shared_widgets/app_scaffold.dart';
+import '../../../shared_widgets/custom_textfield.dart';
 import '../../../utils/api_call_enum.dart';
 
 class LoginPage extends HookConsumerWidget {

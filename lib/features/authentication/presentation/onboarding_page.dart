@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stoke_reviews_app/route/app_router.gr.dart';
 
-import '../../../appwide_custom_widgets/action_button.dart';
-import '../../../appwide_custom_widgets/app_scaffold.dart';
+import '../../../shared_widgets/action_button.dart';
+import '../../../shared_widgets/app_scaffold.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({Key? key}) : super(key: key);

@@ -31,7 +31,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      title: 'Stoke Reviews',
+      title: 'Stoke Reviews App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

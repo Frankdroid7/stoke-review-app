@@ -26,7 +26,7 @@ class CommentRepoImpl extends CommentRepository {
 
       return commentList.map((e) => CommentModel.fromJson(e)).toList();
     } on DioError catch (e) {
-      throw (apiError(e).error);
+      throw (apiError(e).errorMsg);
     }
   }
 
@@ -41,7 +41,7 @@ class CommentRepoImpl extends CommentRepository {
 
       return CommentModel.fromJson(response.data);
     } on DioError catch (e) {
-      throw (apiError(e).error);
+      throw (apiError(e).errorMsg);
     }
   }
 }
