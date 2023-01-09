@@ -56,4 +56,16 @@ class ReviewRepoImpl implements ReviewRepository {
       return left(apiError(e).errorMsg);
     }
   }
+
+  @override
+  Future<List<ReviewData>> getAllReviews() async {
+    try {
+      Response response = await _dio.get(ApiConstants.getAllReviews);
+
+      List responseList = response.data;
+      return responseList.map((e) => ReviewData.fromJson(e)).toList();
+    } on DioError catch (e) {
+      return throw (apiError(e).errorMsg);
+    }
+  }
 }

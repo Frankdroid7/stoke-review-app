@@ -9,4 +9,6 @@ abstract class ReviewRepository {
   Future<Either<String, bool>> postReview({required ReviewModel reviewModel});
   Future<Either<String, List<ReviewData>>> getReviewByPlaceId(
       {required String placeId});
+
+  Future<List<ReviewData>> getAllReviews();
 }

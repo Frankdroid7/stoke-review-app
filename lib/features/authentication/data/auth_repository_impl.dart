@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:stoke_reviews_app/utils/api_error.dart';
 import '../../../utils/app_custom_error.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -25,6 +26,8 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       Response response = await dio.get(ApiConstants.loginUser,
           queryParameters: userCredentialsMap);
+      debugPrint('Login result --> ${response.data}');
+
       return right(response.data as String);
     } on DioError catch (e) {
       return left(apiError(e));
@@ -41,8 +44,12 @@ class AuthRepositoryImpl extends AuthRepository {
         data: userModel.toJson(),
       );
 
+      String responseData = response.data;
       debugPrint('Registration result --> ${response.data}');
-      return right(response.data as String);
+      Map<String, dynamic> payload = Jwt.parseJwt(responseData);
+      print('REGISTER PAYLOAD -> $payload');
+
+      return right(responseData);
     } on DioError catch (e) {
       debugPrint('Registration error --> ${e}');
 

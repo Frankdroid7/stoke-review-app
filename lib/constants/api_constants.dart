@@ -12,4 +12,5 @@ class ApiConstants {
   static const String postComment = '$baseUrl/Comment/PostComment';
   static const String postRating = '$baseUrl/Rank/PostRank';
   static const String postReview = '$baseUrl/Review/PostReview';
+  static const String getAllReviews = '$baseUrl/Review/GetAllReviews';
 }

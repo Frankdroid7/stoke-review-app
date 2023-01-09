@@ -4,9 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/application/comment_service.dart';
-import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 
 import '../../../../shared_widgets/custom_textfield.dart';
+import '../../../../utils/enums.dart';
 import '../../domain/comment_model.dart';
 import 'comment_tile.dart';
 
@@ -160,24 +160,19 @@ class BottomSheetWidget extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              SingleChildScrollView(
-                child: Text(
-                  reviewData.reviewText,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+              Text(
+                reviewData.reviewText,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
+              Expanded(
                 child: ListView.separated(
                   padding: EdgeInsets.zero,
                   itemCount: commentService.commentModelList.length,
                   itemBuilder: (context, index) {
-                    // return Text(
-                    //     commentService.commentModelList[index].commentText!);
                     return CommentTile(
                         commentModel: commentService.commentModelList[index]);
                   },

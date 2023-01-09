@@ -69,8 +69,9 @@ class ReviewData {
 
   factory ReviewData.fromJson(Map<String, dynamic> json) {
     return ReviewData(
-        reviewUserName: json['reviewUserName'],
-        reviewId: json['reviewId'],
-        reviewText: json['reviewText']);
+      reviewUserName: json['reviewUserName'] ?? '',
+      reviewId: json['reviewId'] ?? '',
+      reviewText: json['reviewText'] ?? '',
+    );
   }
 }

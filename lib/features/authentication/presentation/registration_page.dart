@@ -1,13 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:jwt_decode/jwt_decode.dart';
 import 'package:stoke_reviews_app/features/authentication/application/authentication_service.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
 import 'package:stoke_reviews_app/route/app_router.gr.dart';
-import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 
 import 'package:stoke_reviews_app/exports/exports.dart';
+
+import '../../../utils/enums.dart';
 
 class RegistrationPage extends HookConsumerWidget {
   const RegistrationPage({super.key});
@@ -20,7 +20,7 @@ class RegistrationPage extends HookConsumerWidget {
     var phoneNumCtrl = useTextEditingController();
     var passwordCtrl = useTextEditingController();
 
-    var loadingState = ref.watch(loadingStateProvider.notifier).state;
+    ApiCallEnum apiCallEnum = ref.watch(authServiceStateNotifierProvider);
     var authService = ref.read(authServiceStateNotifierProvider.notifier);
 
     ref.listen(authServiceStateNotifierProvider, (previous, current) {
@@ -28,93 +28,93 @@ class RegistrationPage extends HookConsumerWidget {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(authService.errorMessage)));
       } else if (current == ApiCallEnum.success) {
-        context.router.push(const HomeRoute());
+        context.router.push(HomeRoute());
       }
     });
 
     return AppScaffold(
-      child: ListView(
-        children: [
-          SizedBox(height: 10),
-          Text(
-            'Stoke on Trent Reviews',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: [
+            SizedBox(height: 10),
+            Text(
+              'Stoke on Trent Reviews',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          Text(
-            'Registration',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
+            SizedBox(height: 10),
+            Text(
+              'Registration',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CustomTextField(
-                  labelText: 'First name',
-                  controller: firstNameCtrl,
-                ),
-                SizedBox(height: 20),
-                CustomTextField(
-                  labelText: 'Surname',
-                  controller: surnameCtrl,
-                ),
-                SizedBox(height: 20),
-                CustomTextField(
-                  labelText: 'Email address',
-                  controller: emailCtrl,
-                ),
-                SizedBox(height: 20),
-                CustomTextField(
-                  labelText: 'Phone number',
-                  isNumberOnlyInput: true,
-                  controller: phoneNumCtrl,
-                ),
-                SizedBox(height: 20),
-                CustomTextField(
-                  isPassword: true,
-                  labelText: 'Password',
-                  controller: passwordCtrl,
-                ),
-                SizedBox(height: 20),
-                CustomTextField(
-                  isPassword: true,
-                  labelText: 'Confirm Password',
-                ),
-                SizedBox(height: 40),
-                loadingState
-                    ? Text('Loading...')
-                    : ActionButton(
-                        onPressed: () async {
-                          // context.router.push(const HomeRoute());
-                          final userModel = UserModel(
-                            forenames: firstNameCtrl.text,
-                            email: emailCtrl.text,
-                            password: passwordCtrl.text,
-                            phone: phoneNumCtrl.text,
-                            surname: surnameCtrl.text,
-                          );
-                          loadingState = true;
+            SizedBox(height: 10),
+            SizedBox(height: 20),
+            CustomTextField(
+              labelText: 'Surname',
+              controller: surnameCtrl,
+            ),
+            SizedBox(height: 20),
+            CustomTextField(
+              labelText: 'Email address',
+              controller: emailCtrl,
+            ),
+            SizedBox(height: 20),
+            CustomTextField(
+              labelText: 'Phone number',
+              isNumberOnlyInput: true,
+              controller: phoneNumCtrl,
+            ),
+            SizedBox(height: 20),
+            CustomTextField(
+              isPassword: true,
+              labelText: 'Password',
+              controller: passwordCtrl,
+            ),
+            SizedBox(height: 20),
+            CustomTextField(
+              isPassword: true,
+              labelText: 'Confirm Password',
+            ),
+            SizedBox(height: 40),
+            apiCallEnum == ApiCallEnum.loading
+                ? const Center(child: CircularProgressIndicator())
+                : ActionButton(
+                    onPressed: () async {
+                      final userModel = UserModel(
+                        forenames: firstNameCtrl.text,
+                        email: emailCtrl.text,
+                        password: passwordCtrl.text,
+                        phone: phoneNumCtrl.text,
+                        surname: surnameCtrl.text,
+                      );
 
-                          authService.registerUser(userModel: userModel);
-
-                          loadingState = false;
-                        },
-                        title: 'Submit',
-                      ),
-              ],
+                      authService.registerUser(ref: ref, userModel: userModel);
+                    },
+                    title: 'Submit',
+                  ),
+            SizedBox(height: 10),
+            Center(
+              child: InkWell(
+                onTap: () => context.router.popAndPush(const LoginRoute()),
+                child: Text(
+                  'Go to Login page',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

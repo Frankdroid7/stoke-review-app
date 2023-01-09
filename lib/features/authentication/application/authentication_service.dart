@@ -4,16 +4,14 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'package:stoke_reviews_app/features/authentication/data/auth_repository_impl.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_login_model.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
-import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 
 import '../../../utils/app_custom_error.dart';
+import '../../../utils/enums.dart';
 
 final authServiceStateNotifierProvider =
     StateNotifierProvider<AuthServiceStateNotifier, ApiCallEnum>((ref) {
   return AuthServiceStateNotifier(ref.read(authRepoImpl));
 });
-
-final loadingStateProvider = StateProvider<bool>((ref) => false);
 
 class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
   final AuthRepositoryImpl _authRepositoryImpl;
@@ -21,7 +19,7 @@ class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
 
   String errorMessage = '';
 
-  registerUser({required UserModel userModel}) async {
+  registerUser({required WidgetRef ref, required UserModel userModel}) async {
     state = ApiCallEnum.loading;
 
     Either<AppCustomError, String> register =
@@ -31,6 +29,12 @@ class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
       state = ApiCallEnum.error;
     }, (data) {
       state = ApiCallEnum.success;
+      Map<String, dynamic> payload = Jwt.parseJwt(data);
+
+      ref.read(userStateProvider.notifier).state = UserModel(
+          userId: int.parse(payload['nameid']),
+          fullName: payload['name'],
+          userRoleName: payload['role']);
       return data;
     });
   }
@@ -52,6 +56,7 @@ class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
       ref.read(userStateProvider.notifier).state = UserModel(
         userId: int.parse(payload['nameid']),
         fullName: payload['name'],
+        userRoleName: payload['role'],
       );
       return data;
     });

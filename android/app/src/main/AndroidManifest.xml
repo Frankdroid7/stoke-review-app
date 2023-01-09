@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.stoke_reviews_app">
-   <application
-        android:label="stoke_reviews_app"
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:label="Stoke Reviews"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

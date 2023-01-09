@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
-import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 import 'package:stoke_reviews_app/utils/app_custom_error.dart';
 
+import '../../../utils/enums.dart';
 import '../data/comment_repository_impl.dart';
 import '../domain/comment_model.dart';
 

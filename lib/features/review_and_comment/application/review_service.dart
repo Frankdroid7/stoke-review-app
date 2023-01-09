@@ -2,8 +2,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/domain/rank_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/domain/review_model.dart';
-import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 
+import '../../../utils/enums.dart';
 import '../data/review_repository_impl.dart';
 
 var reviewServiceStateNotifierProvider =
@@ -15,6 +15,8 @@ class ReviewService extends StateNotifier<ApiCallEnum> {
   ReviewService({required this.reviewRepoImpl}) : super(ApiCallEnum.error);
 
   List<ReviewData> reviewDataList = [];
+  List<ReviewData> allReviewsDataList =
+      []; //This will only be used in the admin page.
 
   String errorMsg = '';
   Future postRating({required RankModel rankModel}) async {
@@ -49,11 +51,18 @@ class ReviewService extends StateNotifier<ApiCallEnum> {
     reviewRepoImpl.getReviewByPlaceId(placeId: placeId).then((value) {
       value.fold((err) {
         errorMsg = err;
-        state = ApiCallEnum.loading;
+        state = ApiCallEnum.error;
       }, (data) {
         reviewDataList = data;
         state = ApiCallEnum.success;
       });
     });
   }
+
+  Future<List<ReviewData>> getAllReviews() async {
+    return reviewRepoImpl.getAllReviews();
+  }
 }
+
+var getAllReviewsFuture = FutureProvider.autoDispose<List<ReviewData>>((ref) =>
+    ref.read(reviewServiceStateNotifierProvider.notifier).getAllReviews());

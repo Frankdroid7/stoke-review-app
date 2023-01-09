@@ -1,9 +1,9 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
 import 'package:stoke_reviews_app/features/search/data/search_repository_impl.dart';
-import 'package:stoke_reviews_app/utils/api_call_enum.dart';
 
 import '../../../utils/app_custom_error.dart';
+import '../../../utils/enums.dart';
 
 var searchPlacesStateNotifierProvider =
     StateNotifierProvider<SearchPlacesService, ApiCallEnum>(

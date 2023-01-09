@@ -37,6 +37,7 @@ class CustomTextField extends StatefulWidget {
   FocusNode? focusNode;
   bool showLabelOrPassword;
   String? initialValue;
+  EdgeInsetsGeometry contentPadding;
   TextCapitalization textCapitalization;
 
   Future<bool>? Function()? verifyInputFromServerFunc;
@@ -74,6 +75,7 @@ class CustomTextField extends StatefulWidget {
     this.labelText = "",
     this.hintText = "",
     this.labelColor,
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 12),
     this.maxLength,
     this.maxLines = 1,
     this.focusNode,
@@ -88,8 +90,16 @@ class CustomTextField extends StatefulWidget {
 
 class _CustomTextFieldState extends State<CustomTextField> {
   bool? inputVerified;
+  bool? obscureText;
   bool verifyingInput = false;
   bool? showSuffixIconWhenTryingToValidateInputFromServer;
+
+  @override
+  void initState() {
+    super.initState();
+    obscureText = widget.obscureText;
+    if (widget.isPassword) obscureText = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,15 +122,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
                           height: 6,
                         )
                       : SizedBox.shrink(),
-                  // widget.isPassword
-                  //     ? Text(
-                  //         "${widget.controller!.text.toString().length}/6",
-                  //         style: TextStyle(
-                  //           color: widget.labelColor,
-                  //           fontSize: 14,
-                  //         ),
-                  //       )
-                  //     : Container(),
                 ],
               )
             : SizedBox.shrink(),
@@ -153,7 +154,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             suffix: _getSuffixIcon(),
             border: widget.hasBorder ? null : InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12),
+            contentPadding: widget.contentPadding,
             enabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
                     borderSide: BorderSide(
@@ -208,7 +209,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           },
           controller: widget.controller,
           keyboardType: getKeyBoardType(widget.keyboardType),
-          obscureText: widget.obscureText,
+          obscureText: obscureText!,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,
           focusNode: widget.focusNode,
@@ -221,9 +222,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   TextInputType getKeyBoardType(TextInputType textInputType) {
     TextInputType numberInputType = Platform.isIOS
-        ? TextInputType.numberWithOptions(decimal: true)
+        ? const TextInputType.numberWithOptions(decimal: true)
         : TextInputType.number;
-    if (widget.isAmountField == true) {
+    if (widget.isAmountField == true || widget.isNumberOnlyInput) {
       return numberInputType;
     }
 
@@ -241,11 +242,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
           color: widget.obscureText ? Colors.grey : Colors.blue,
         ),
         onPressed: () {
-          widget.obscureText = !widget.obscureText;
+          obscureText = !obscureText!;
           setState(() {});
         },
       );
     }
+    return null;
   }
 
   List<TextInputFormatter>? getInputFormatters() {

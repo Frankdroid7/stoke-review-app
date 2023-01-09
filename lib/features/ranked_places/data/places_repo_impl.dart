@@ -20,6 +20,7 @@ class PlacesRepositoryImpl extends PlacesRepository {
 
       List responseList = response.data;
 
+      print(responseList);
       return responseList.map((json) => PlacesModel.fromJson(json)).toList();
     } on DioError catch (e) {
       throw (AppCustomError('An error, please pull down to refresh.'));

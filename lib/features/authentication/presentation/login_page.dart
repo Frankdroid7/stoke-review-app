@@ -11,7 +11,7 @@ import 'package:stoke_reviews_app/route/app_router.gr.dart';
 import '../../../shared_widgets/action_button.dart';
 import '../../../shared_widgets/app_scaffold.dart';
 import '../../../shared_widgets/custom_textfield.dart';
-import '../../../utils/api_call_enum.dart';
+import '../../../utils/enums.dart';
 
 class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
@@ -34,7 +34,7 @@ class LoginPage extends HookConsumerWidget {
           ),
         );
       } else if (current == ApiCallEnum.success) {
-        context.router.replaceAll([const HomeRoute()]);
+        context.router.replaceAll([HomeRoute()]);
       }
     });
 

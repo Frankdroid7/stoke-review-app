@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stoke_reviews_app/exports/exports.dart';
 
 import 'package:stoke_reviews_app/features/search/application/search_places_service.dart';
-import 'package:stoke_reviews_app/utils/api_call_enum.dart';
+import 'package:stoke_reviews_app/utils/enums.dart';
 
 import '../../ranked_places/presentation/custom_widget/places_card.dart';
 
