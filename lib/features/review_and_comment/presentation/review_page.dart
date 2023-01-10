@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/application/review_service.dart';
+import 'package:stoke_reviews_app/features/review_and_comment/data/review_repository_impl.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/domain/rank_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/domain/review_model.dart';
 import 'package:stoke_reviews_app/shared_widgets/app_scaffold.dart';
@@ -47,7 +48,9 @@ class ReviewPage extends HookConsumerWidget {
           'Review Posted',
           style: TextStyle(color: Colors.blue),
         )));
+        reviewTextEditingCtrl.clear();
         showPostReviewWidget.value = false;
+        ref.invalidate(getReviewsByPlaceIdFuture(placesModel.placeId));
       } else if (current == ApiCallEnum.error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -65,134 +68,148 @@ class ReviewPage extends HookConsumerWidget {
       appBar: AppBar(
         title: const Text('Review page'),
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Hero(
-              tag: 'placeImg',
-              child: Image.network(
-                (placesModel.imageUrl == null || placesModel.imageUrl!.isEmpty)
-                    ? stokeOnTrentPlaceHolderImage
-                    : placesModel.imageUrl!,
-                height: 140,
-                fit: BoxFit.fitWidth,
-                errorBuilder: (context, _, __) {
-                  return Image.network(
-                    stokeOnTrentPlaceHolderImage,
-                    height: 140,
-                    fit: BoxFit.fitWidth,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 10),
-            Hero(
-              tag: 'placesText',
-              child: Text(
-                placesModel.placeName,
-                style: const TextStyle(fontSize: 22),
-              ),
-            ),
-            placesModel.description.isEmpty
-                ? const SizedBox.shrink()
-                : Text(
-                    placesModel.description,
-                    style: const TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-            placesModel.description.isEmpty
-                ? const SizedBox.shrink()
-                : const SizedBox(height: 10),
-            const Divider(thickness: 2),
-            InkWell(
-              onTap: () {
-                showPostReviewWidget.value = !showPostReviewWidget.value;
-              },
-              child: const Text(
-                'Post a review',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 16,
+      child: RefreshIndicator(
+        onRefresh: () => Future(() =>
+            ref.invalidate(getReviewsByPlaceIdFuture(placesModel.placeId))),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Hero(
+                tag: 'placeImg',
+                child: Image.network(
+                  (placesModel.imageUrl == null ||
+                          placesModel.imageUrl!.isEmpty)
+                      ? stokeOnTrentPlaceHolderImage
+                      : placesModel.imageUrl!,
+                  height: 140,
+                  fit: BoxFit.fitWidth,
+                  errorBuilder: (context, _, __) {
+                    return Image.network(
+                      stokeOnTrentPlaceHolderImage,
+                      height: 140,
+                      fit: BoxFit.fitWidth,
+                    );
+                  },
                 ),
               ),
-            ),
-            Visibility(
-              visible: showPostReviewWidget.value,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  RatingBar.builder(
-                    minRating: 1,
-                    itemBuilder: (context, _) => const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ),
-                    onRatingUpdate: (rating) {
-                      reviewRating = rating;
-                    },
-                  ),
-                  CustomTextField(
-                    maxLines: 4,
-                    controller: reviewTextEditingCtrl,
-                    labelText: '\nWrite your review...',
-                    contentPadding: const EdgeInsets.all(12),
-                  ),
-                  reviewServiceState == ApiCallEnum.loading
-                      ? const CircularProgressIndicator()
-                      : ActionButton(
-                          onPressed: () {
-                            if (reviewRating > 0.0) {
-                              RankModel rankModel = RankModel(
-                                placeId: placesModel.placeId,
-                                placeName: placesModel.placeName,
-                                ranking: reviewRating.toInt(),
-                              );
-                              reviewService.postRating(rankModel: rankModel);
-                            }
-                            if (reviewTextEditingCtrl.text.isNotEmpty) {
-                              ReviewModel reviewModel = ReviewModel(
-                                  placeName: placesModel.placeName,
-                                  placeId: placesModel.placeId,
-                                  reviewText: reviewTextEditingCtrl.text);
-                              reviewService.postReview(
-                                  reviewModel: reviewModel);
-                            }
-                          },
-                          title: 'Post Review',
-                        ),
-                ],
+              const SizedBox(height: 10),
+              Hero(
+                tag: 'placesText',
+                child: Text(
+                  placesModel.placeName,
+                  style: const TextStyle(fontSize: 22),
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Reviews',
-              style: TextStyle(fontSize: 20),
-            ),
-            const SizedBox(height: 8),
-            placesModel.reviewDtos.isEmpty
-                ? const Center(
+              placesModel.description.isEmpty
+                  ? const SizedBox.shrink()
+                  : Text(
+                      placesModel.description,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+              placesModel.description.isEmpty
+                  ? const SizedBox.shrink()
+                  : const SizedBox(height: 10),
+              const Divider(thickness: 2),
+              InkWell(
+                onTap: () {
+                  showPostReviewWidget.value = !showPostReviewWidget.value;
+                },
+                child: const Text(
+                  'Post a review',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: showPostReviewWidget.value,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    RatingBar.builder(
+                      minRating: 1,
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (rating) {
+                        reviewRating = rating;
+                      },
+                    ),
+                    CustomTextField(
+                      maxLines: 4,
+                      controller: reviewTextEditingCtrl,
+                      labelText: '\nWrite your review...',
+                      contentPadding: const EdgeInsets.all(12),
+                    ),
+                    reviewServiceState == ApiCallEnum.loading
+                        ? const CircularProgressIndicator()
+                        : ActionButton(
+                            onPressed: () {
+                              if (reviewRating > 0.0) {
+                                RankModel rankModel = RankModel(
+                                  placeId: placesModel.placeId,
+                                  placeName: placesModel.placeName,
+                                  ranking: reviewRating.toInt(),
+                                );
+                                reviewService.postRating(rankModel: rankModel);
+                              }
+                              if (reviewTextEditingCtrl.text.isNotEmpty) {
+                                ReviewModel reviewModel = ReviewModel(
+                                    placeName: placesModel.placeName,
+                                    placeId: placesModel.placeId,
+                                    reviewText: reviewTextEditingCtrl.text);
+                                reviewService.postReview(
+                                    reviewModel: reviewModel);
+                              }
+                            },
+                            title: 'Post Review',
+                          ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Reviews',
+                style: TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 8),
+              ref.watch(getReviewsByPlaceIdFuture(placesModel.placeId)).when(
+                  data: (data) {
+                if (data.isEmpty) {
+                  return const Center(
                     child: Text(
                       'No reviews\nPost a review',
                       style: TextStyle(fontSize: 18),
                     ),
-                  )
-                : SizedBox(
+                  );
+                } else {
+                  return SizedBox(
                     height: MediaQuery.of(context).size.height * 0.6,
                     child: ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: placesModel.reviewDtos.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: data.length,
                         itemBuilder: (context, index) {
                           return ReviewListTile(
                             placesModel: placesModel,
-                            reviewData: placesModel.reviewDtos[index],
+                            reviewData: data[index],
                           );
                         }),
-                  ),
-          ],
+                  );
+                }
+              }, error: (error, stack) {
+                return Text(error.toString());
+              }, loading: () {
+                return const Center(child: CircularProgressIndicator());
+              }),
+            ],
+          ),
         ),
       ),
     );

@@ -87,12 +87,19 @@ class HomePage extends HookConsumerWidget {
               );
             },
             error: (err, stack) {
-              err as AppCustomError;
-              return Text(
-                err.errorMsg,
-                style: const TextStyle(
-                  fontSize: 18,
-                ),
+              return Column(
+                children: [
+                  Text(
+                    err.toString(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  ActionButton(
+                      onPressed: () =>
+                          ref.refresh(getAllPlacesFutureProvider.future),
+                      title: 'Refresh')
+                ],
               );
             },
             loading: () => Center(child: const CircularProgressIndicator()),

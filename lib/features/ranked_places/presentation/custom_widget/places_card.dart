@@ -4,16 +4,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/constants/app_constants.dart';
 
 import '../../../../route/app_router.gr.dart';
+import '../../application/places_service.dart';
 import '../../domain/places_model.dart';
 
-class PlacesCard extends StatelessWidget {
+class PlacesCard extends ConsumerWidget {
   final PlacesModel placesModel;
   const PlacesCard({Key? key, required this.placesModel}) : super(key: key);
 
   final double imageHeight = 100;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () {
         context.router.push(ReviewRoute(placesModel: placesModel));

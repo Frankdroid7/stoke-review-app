@@ -21,9 +21,6 @@ class CommentRepoImpl extends CommentRepository {
 
       List commentList = response.data;
 
-      print('REVIEW -> ${commentList}');
-      print('REVIEW -> ${commentList.length}');
-
       return commentList.map((e) => CommentModel.fromJson(e)).toList();
     } on DioError catch (e) {
       throw (apiError(e).errorMsg);

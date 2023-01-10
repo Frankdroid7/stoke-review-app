@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:stoke_reviews_app/features/ranked_places/application/places_service.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/domain/rank_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/domain/review_model.dart';
@@ -7,12 +8,14 @@ import '../../../utils/enums.dart';
 import '../data/review_repository_impl.dart';
 
 var reviewServiceStateNotifierProvider =
-    StateNotifierProvider<ReviewService, ApiCallEnum>((ref) =>
-        ReviewService(reviewRepoImpl: ref.read(reviewRepoImplProvider)));
+    StateNotifierProvider<ReviewService, ApiCallEnum>((ref) => ReviewService(
+        reviewRepoImpl: ref.read(reviewRepoImplProvider), ref: ref));
 
 class ReviewService extends StateNotifier<ApiCallEnum> {
+  final Ref ref;
   final ReviewRepoImpl reviewRepoImpl;
-  ReviewService({required this.reviewRepoImpl}) : super(ApiCallEnum.error);
+  ReviewService({required this.reviewRepoImpl, required this.ref})
+      : super(ApiCallEnum.error);
 
   List<ReviewData> reviewDataList = [];
   List<ReviewData> allReviewsDataList =
@@ -39,7 +42,7 @@ class ReviewService extends StateNotifier<ApiCallEnum> {
       value.fold((err) {
         errorMsg = err;
         state = ApiCallEnum.error;
-      }, (r) {
+      }, (data) {
         state = ApiCallEnum.success;
       });
     });
@@ -62,7 +65,16 @@ class ReviewService extends StateNotifier<ApiCallEnum> {
   Future<List<ReviewData>> getAllReviews() async {
     return reviewRepoImpl.getAllReviews();
   }
+
+  Future<List<ReviewData>> getReviewsByPlaceId(int placeId) async {
+    return reviewRepoImpl.getReviewsByPlaceId(placeId);
+  }
 }
 
 var getAllReviewsFuture = FutureProvider.autoDispose<List<ReviewData>>((ref) =>
     ref.read(reviewServiceStateNotifierProvider.notifier).getAllReviews());
+
+var getReviewsByPlaceIdFuture = FutureProvider.autoDispose
+    .family<List<ReviewData>, int>((ref, placeId) => ref
+        .read(reviewServiceStateNotifierProvider.notifier)
+        .getReviewsByPlaceId(placeId));

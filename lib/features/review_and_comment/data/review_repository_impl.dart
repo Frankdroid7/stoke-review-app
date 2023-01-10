@@ -11,8 +11,7 @@ import 'package:stoke_reviews_app/utils/api_error.dart';
 
 var reviewRepoImplProvider = Provider((ref) => ReviewRepoImpl(ref));
 
-class ReviewRepoImpl implements ReviewRepository {
-  final Dio _dio = Dio();
+class ReviewRepoImpl extends ReviewRepository {
   Ref ref;
   ReviewRepoImpl(this.ref);
 
@@ -20,7 +19,7 @@ class ReviewRepoImpl implements ReviewRepository {
   Future<Either<String, bool>> postRating(
       {required RankModel rankModel}) async {
     try {
-      await _dio.post(ApiConstants.postRating,
+      await dio.post(ApiConstants.postRating,
           queryParameters: {'userId': ref.read(userStateProvider).userId},
           data: rankModel.toJson());
 
@@ -31,14 +30,14 @@ class ReviewRepoImpl implements ReviewRepository {
   }
 
   @override
-  Future<Either<String, bool>> postReview(
+  Future<Either<String, ReviewData>> postReview(
       {required ReviewModel reviewModel}) async {
     try {
-      await _dio.post(ApiConstants.postReview,
+      Response response = await dio.post(ApiConstants.postReview,
           queryParameters: {'userId': ref.read(userStateProvider).userId},
           data: reviewModel.toJson());
 
-      return right(true);
+      return right(ReviewData.fromJson(response.data));
     } on DioError catch (e) {
       return left(apiError(e).errorMsg);
     }
@@ -48,7 +47,7 @@ class ReviewRepoImpl implements ReviewRepository {
   Future<Either<String, List<ReviewData>>> getReviewByPlaceId(
       {required String placeId}) async {
     try {
-      Response response = await _dio.get(ApiConstants.getCommentsByReviewId);
+      Response response = await dio.get(ApiConstants.getCommentsByReviewId);
 
       List responseList = response.data;
       return right(responseList.map((e) => ReviewData.fromJson(e)).toList());
@@ -60,7 +59,20 @@ class ReviewRepoImpl implements ReviewRepository {
   @override
   Future<List<ReviewData>> getAllReviews() async {
     try {
-      Response response = await _dio.get(ApiConstants.getAllReviews);
+      Response response = await dio.get(ApiConstants.getAllReviews);
+
+      List responseList = response.data;
+      return responseList.map((e) => ReviewData.fromJson(e)).toList();
+    } on DioError catch (e) {
+      return throw (apiError(e).errorMsg);
+    }
+  }
+
+  @override
+  Future<List<ReviewData>> getReviewsByPlaceId(int placeId) async {
+    try {
+      Response response = await dio
+          .get('${ApiConstants.getReviewsByPlaceId}/?placeId=$placeId');
 
       List responseList = response.data;
       return responseList.map((e) => ReviewData.fromJson(e)).toList();

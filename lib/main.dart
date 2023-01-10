@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:core';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/route/app_router.gr.dart';
 import 'package:stoke_reviews_app/utils/riverpod_logger.dart';
 

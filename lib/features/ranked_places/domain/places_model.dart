@@ -33,7 +33,7 @@ class PlacesModel {
     List _reviewDtos = json['reviewDtos'];
 
     return PlacesModel(
-      rank: json['rank'] ?? 0,
+      rank: json['rank'] != null ? json['rank'].toInt() : 0,
       placeId: json['placeId'] ?? 0,
       description: json['description'] ?? '',
       placeName: json['placeName'] ?? '',

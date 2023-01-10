@@ -13,4 +13,6 @@ class ApiConstants {
   static const String postRating = '$baseUrl/Rank/PostRank';
   static const String postReview = '$baseUrl/Review/PostReview';
   static const String getAllReviews = '$baseUrl/Review/GetAllReviews';
+  static const String getReviewsByPlaceId =
+      '$baseUrl/Review/GetReviewsByPlaceId';
 }
