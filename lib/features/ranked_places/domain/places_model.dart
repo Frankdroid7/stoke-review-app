@@ -30,7 +30,7 @@ class PlacesModel {
   }
 
   factory PlacesModel.fromJson(Map<String, dynamic> json) {
-    List _reviewDtos = json['reviewDtos'];
+    List _reviewDtos = json['reviewDtos'] ?? [];
 
     return PlacesModel(
       rank: json['rank'] != null ? json['rank'].toInt() : 0,

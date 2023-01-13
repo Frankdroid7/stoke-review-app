@@ -18,7 +18,7 @@ class CustomTextField extends StatefulWidget {
   TextStyle? textStyle;
   // BuildCounterWidget? buildCounterWidget;
   bool isNumberOnlyInput;
-  Function? validator;
+  Function(String)? validator;
   Function(String value)? onChanged;
   VoidCallback? onTap;
   TextEditingController? controller;

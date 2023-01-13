@@ -30,6 +30,8 @@ class AuthRepositoryImpl extends AuthRepository {
 
       return right(response.data as String);
     } on DioError catch (e) {
+      debugPrint('Login error --> ${e.toString()}');
+
       return left(apiError(e));
     }
   }
@@ -37,7 +39,7 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<Either<AppCustomError, String>> register(
       {required UserModel userModel}) async {
-    print('BODY -> ${userModel.toJson()}');
+    print('register body -> ${userModel.toJson()}');
     try {
       Response response = await dio.post(
         ApiConstants.registerUser,
@@ -51,8 +53,12 @@ class AuthRepositoryImpl extends AuthRepository {
 
       return right(responseData);
     } on DioError catch (e) {
-      debugPrint('Registration error --> ${e}');
+      debugPrint('Registration error --> ${e.response?.statusCode}');
+      debugPrint('Registration error --> ${e.response?.data}');
 
+      if (e.response?.data['message'] != null) {
+        return left(apiError(e));
+      }
       return left(apiError(e));
     }
   }

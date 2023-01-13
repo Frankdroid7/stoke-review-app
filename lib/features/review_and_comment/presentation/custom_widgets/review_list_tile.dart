@@ -4,9 +4,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stoke_reviews_app/features/authentication/domain/user_model.dart';
 import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dart';
 import 'package:stoke_reviews_app/features/review_and_comment/application/comment_service.dart';
+import 'package:stoke_reviews_app/features/review_and_comment/application/review_service.dart';
 
 import '../../../../shared_widgets/custom_textfield.dart';
 import '../../../../utils/enums.dart';
+import '../../../ranked_places/application/places_service.dart';
 import '../../domain/comment_model.dart';
 import 'comment_tile.dart';
 
@@ -57,7 +59,7 @@ class ReviewListTile extends HookConsumerWidget {
         );
       },
       error: (error, stack) {
-        return const Text('Something went wrong');
+        return const Icon(Icons.error_outline);
       },
       loading: () {
         return const CircularProgressIndicator();
@@ -82,8 +84,6 @@ class BottomSheetWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var commentCtrl = useTextEditingController();
-    CommentService commentService =
-        ref.watch(commentServiceStateProvider.notifier);
     ApiCallEnum commentServiceState = ref.watch(commentServiceStateProvider);
     ReviewData reviewData = ref.read(reviewDataStateProvider.notifier).state;
     PlacesModel placesModel = ref.read(placesModelStateProvider.notifier).state;
@@ -95,6 +95,7 @@ class BottomSheetWidget extends HookConsumerWidget {
             getCommentsByReviewIdFutureProvider(reviewData.reviewId).future);
       }
     });
+
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.8,
       child: Scaffold(
@@ -143,9 +144,11 @@ class BottomSheetWidget extends HookConsumerWidget {
         body: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 ' · ${placesModel.placeName} ·' ?? '',
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
@@ -154,6 +157,7 @@ class BottomSheetWidget extends HookConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 reviewData.reviewUserName,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w200,
@@ -162,27 +166,54 @@ class BottomSheetWidget extends HookConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 reviewData.reviewText,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 8),
-              Expanded(
-                child: ListView.separated(
-                  padding: EdgeInsets.zero,
-                  itemCount: commentService.commentModelList.length,
-                  itemBuilder: (context, index) {
-                    return CommentTile(
-                        commentModel: commentService.commentModelList[index]);
-                  },
-                  separatorBuilder: (context, index) => const Divider(),
-                ),
-              ),
+              CommentListWidget(reviewData.reviewId),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class CommentListWidget extends ConsumerWidget {
+  final int reviewId;
+  const CommentListWidget(this.reviewId, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(getCommentsByReviewIdFutureProvider(reviewId)).when(
+      data: (data) {
+        if (data.isEmpty) {
+          return const Text(
+            'There are no comments to show',
+            textAlign: TextAlign.center,
+          );
+        }
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: ListView.separated(
+            padding: EdgeInsets.zero,
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return CommentTile(commentModel: data[index]);
+            },
+            separatorBuilder: (context, index) => const Divider(),
+          ),
+        );
+      },
+      error: (error, stack) {
+        return Text('Something went wrong');
+      },
+      loading: () {
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 }

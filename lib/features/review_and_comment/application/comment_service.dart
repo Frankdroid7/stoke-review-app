@@ -15,20 +15,23 @@ var placesModelStateProvider =
 
 var commentServiceStateProvider =
     StateNotifierProvider<CommentService, ApiCallEnum>(
-        (ref) => CommentService(ref.read(commentRepoProvider)));
+        (ref) => CommentService(ref.read(commentRepoProvider), ref));
 
 class CommentService extends StateNotifier<ApiCallEnum> {
+  Ref ref;
   CommentRepoImpl commentRepoImpl;
-  CommentService(this.commentRepoImpl) : super(ApiCallEnum.idle);
+  CommentService(this.commentRepoImpl, this.ref) : super(ApiCallEnum.idle);
 
   String errorMessage = '';
-  List<CommentModel> commentModelList = [];
 
   Future<List<CommentModel>> getCommentsByReviewId(int reviewId) async {
-    List<CommentModel> comment =
-        await commentRepoImpl.getCommentByReviewId(reviewId);
-    commentModelList = comment;
-    return comment;
+    try {
+      List<CommentModel> comment =
+          await commentRepoImpl.getCommentByReviewId(reviewId);
+      return comment;
+    } catch (e) {
+      throw (e.toString());
+    }
   }
 
   Future postComment(
@@ -36,10 +39,8 @@ class CommentService extends StateNotifier<ApiCallEnum> {
     state = ApiCallEnum.loading;
 
     try {
-      CommentModel _commentModel = await commentRepoImpl.postComment(
+      await commentRepoImpl.postComment(
           userId: userId, commentModel: commentModel);
-
-      commentModelList.add(_commentModel);
 
       state = ApiCallEnum.success;
     } catch (e) {
@@ -51,6 +52,7 @@ class CommentService extends StateNotifier<ApiCallEnum> {
 
 var getCommentsByReviewIdFutureProvider =
     FutureProvider.autoDispose.family<List<CommentModel>, int>((ref, reviewId) {
+  print('GET COMMENTS BY REVIEW ID');
   return ref
       .read(commentServiceStateProvider.notifier)
       .getCommentsByReviewId(reviewId);

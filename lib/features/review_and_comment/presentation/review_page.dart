@@ -75,31 +75,24 @@ class ReviewPage extends HookConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Hero(
-                tag: 'placeImg',
-                child: Image.network(
-                  (placesModel.imageUrl == null ||
-                          placesModel.imageUrl!.isEmpty)
-                      ? stokeOnTrentPlaceHolderImage
-                      : placesModel.imageUrl!,
-                  height: 140,
-                  fit: BoxFit.fitWidth,
-                  errorBuilder: (context, _, __) {
-                    return Image.network(
-                      stokeOnTrentPlaceHolderImage,
-                      height: 140,
-                      fit: BoxFit.fitWidth,
-                    );
-                  },
-                ),
+              Image.network(
+                (placesModel.imageUrl == null || placesModel.imageUrl!.isEmpty)
+                    ? stokeOnTrentPlaceHolderImage
+                    : placesModel.imageUrl!,
+                height: 140,
+                fit: BoxFit.fitWidth,
+                errorBuilder: (context, _, __) {
+                  return Image.network(
+                    stokeOnTrentPlaceHolderImage,
+                    height: 140,
+                    fit: BoxFit.fitWidth,
+                  );
+                },
               ),
               const SizedBox(height: 10),
-              Hero(
-                tag: 'placesText',
-                child: Text(
-                  placesModel.placeName,
-                  style: const TextStyle(fontSize: 22),
-                ),
+              Text(
+                placesModel.placeName,
+                style: const TextStyle(fontSize: 22),
               ),
               placesModel.description.isEmpty
                   ? const SizedBox.shrink()

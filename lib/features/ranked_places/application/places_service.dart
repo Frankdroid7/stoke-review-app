@@ -3,12 +3,12 @@ import 'package:stoke_reviews_app/features/ranked_places/domain/places_model.dar
 import '../../../utils/enums.dart';
 import '../data/places_repo_impl.dart';
 
-var placesServiceStateProvider =
-    StateProvider((ref) => PlacesServiceNotifier(ref.read(placesRepoImpl)));
+var placesServiceStateProvider = StateNotifierProvider(
+    (ref) => PlacesServiceNotifier(ref.read(placesRepoImpl)));
 
 var getAllPlacesFutureProvider =
     FutureProvider.autoDispose<List<PlacesModel>>((ref) {
-  return ref.read(placesServiceStateProvider).getAllPlaces();
+  return ref.read(placesServiceStateProvider.notifier).getAllPlaces();
 });
 
 class PlacesServiceNotifier extends StateNotifier<ApiCallEnum> {

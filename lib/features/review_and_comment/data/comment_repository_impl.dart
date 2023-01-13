@@ -16,9 +16,11 @@ class CommentRepoImpl extends CommentRepository {
   @override
   Future<List<CommentModel>> getCommentByReviewId(int reviewID) async {
     try {
+      print('TRYING TO GET COMMENT');
       Response response = await dio
           .get('${ApiConstants.getCommentsByReviewId}/?reviewId=$reviewID');
 
+      print('new comments -> ${response.data}');
       List commentList = response.data;
 
       return commentList.map((e) => CommentModel.fromJson(e)).toList();
@@ -35,7 +37,7 @@ class CommentRepoImpl extends CommentRepository {
           'POST COMMENT URL -> ${'${ApiConstants.postComment}?userId=$userId'}');
       Response response = await dio.post(ApiConstants.postComment,
           queryParameters: {'userId': userId}, data: commentModel.toJson());
-
+      print('POST COMMENT DATA -> ${response.data}');
       return CommentModel.fromJson(response.data);
     } on DioError catch (e) {
       throw (apiError(e).errorMsg);

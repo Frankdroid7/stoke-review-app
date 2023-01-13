@@ -34,23 +34,20 @@ class PlacesCard extends ConsumerWidget {
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
                 ),
-                child: Hero(
-                  tag: 'placeImg',
-                  child: Image.network(
-                    (placesModel.imageUrl == null ||
-                            placesModel.imageUrl!.isEmpty)
-                        ? stokeOnTrentPlaceHolderImage
-                        : placesModel.imageUrl!,
-                    height: imageHeight,
-                    fit: BoxFit.fitWidth,
-                    errorBuilder: (context, _, __) {
-                      return Image.network(
-                        stokeOnTrentPlaceHolderImage,
-                        height: imageHeight,
-                        fit: BoxFit.fitWidth,
-                      );
-                    },
-                  ),
+                child: Image.network(
+                  (placesModel.imageUrl == null ||
+                          placesModel.imageUrl!.isEmpty)
+                      ? stokeOnTrentPlaceHolderImage
+                      : placesModel.imageUrl!,
+                  height: imageHeight,
+                  fit: BoxFit.fitWidth,
+                  errorBuilder: (context, _, __) {
+                    return Image.network(
+                      stokeOnTrentPlaceHolderImage,
+                      height: imageHeight,
+                      fit: BoxFit.fitWidth,
+                    );
+                  },
                 ),
               ),
               Expanded(
