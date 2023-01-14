@@ -56,6 +56,7 @@ class AuthServiceStateNotifier extends StateNotifier<ApiCallEnum> {
         userId: int.parse(payload['nameid']),
         fullName: payload['name'],
         userRoleName: payload['role'],
+        token: data,
       );
       return data;
     });

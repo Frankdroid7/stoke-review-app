@@ -105,6 +105,13 @@ class ReviewPage extends HookConsumerWidget {
               placesModel.description.isEmpty
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: buildShowRatingWidget(),
+                ),
+              ),
               const Divider(thickness: 2),
               InkWell(
                 onTap: () {
@@ -157,7 +164,8 @@ class ReviewPage extends HookConsumerWidget {
                                 ReviewModel reviewModel = ReviewModel(
                                     placeName: placesModel.placeName,
                                     placeId: placesModel.placeId,
-                                    reviewText: reviewTextEditingCtrl.text);
+                                    reviewText: reviewTextEditingCtrl.text,
+                                    status: false);
                                 reviewService.postReview(
                                     reviewModel: reviewModel);
                               }
@@ -206,5 +214,18 @@ class ReviewPage extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  List<Widget> buildShowRatingWidget() {
+    List<Widget> iconList = [];
+
+    for (int i = 1; i <= 5; i++) {
+      iconList.add(Icon(
+        Icons.star,
+        color: placesModel.rank >= i ? Colors.amber : Colors.grey,
+      ));
+    }
+
+    return iconList;
   }
 }

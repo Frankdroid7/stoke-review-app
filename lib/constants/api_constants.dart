@@ -15,4 +15,6 @@ class ApiConstants {
   static const String getAllReviews = '$baseUrl/Review/GetAllReviews';
   static const String getReviewsByPlaceId =
       '$baseUrl/Review/GetReviewsByPlaceId';
+
+  static const String approveReview = '$baseUrl/Review/UpdateReviewStatus';
 }

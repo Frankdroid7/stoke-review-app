@@ -10,6 +10,7 @@ import '../../../../shared_widgets/custom_textfield.dart';
 import '../../../../utils/enums.dart';
 import '../../../ranked_places/application/places_service.dart';
 import '../../domain/comment_model.dart';
+import '../../domain/review_model.dart';
 import 'comment_tile.dart';
 
 class ReviewListTile extends HookConsumerWidget {

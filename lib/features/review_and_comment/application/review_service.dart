@@ -67,7 +67,10 @@ class ReviewService extends StateNotifier<ApiCallEnum> {
   }
 
   Future<List<ReviewData>> getReviewsByPlaceId(int placeId) async {
-    return reviewRepoImpl.getReviewsByPlaceId(placeId);
+    List<ReviewData> reviews =
+        await reviewRepoImpl.getReviewsByPlaceId(placeId);
+
+    return reviews.where((element) => element.status == true).toList();
   }
 }
 

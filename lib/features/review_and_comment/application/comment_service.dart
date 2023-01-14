@@ -6,6 +6,7 @@ import 'package:stoke_reviews_app/utils/app_custom_error.dart';
 import '../../../utils/enums.dart';
 import '../data/comment_repository_impl.dart';
 import '../domain/comment_model.dart';
+import '../domain/review_model.dart';
 
 var reviewDataStateProvider =
     StateProvider<ReviewData>((ref) => ReviewData.emptyData());

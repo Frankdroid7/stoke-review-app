@@ -1,3 +1,5 @@
+import '../../review_and_comment/domain/review_model.dart';
+
 class PlacesModel {
   int placeId;
   String placeName;
@@ -50,28 +52,5 @@ class PlacesModel {
     data['imageId'] = imageId;
     data['imageUrl'] = imageUrl;
     return data;
-  }
-}
-
-class ReviewData {
-  int reviewId;
-  String reviewText;
-  String reviewUserName;
-
-  ReviewData(
-      {required this.reviewUserName,
-      required this.reviewId,
-      required this.reviewText});
-
-  factory ReviewData.emptyData() {
-    return ReviewData(reviewUserName: '', reviewId: 0, reviewText: '');
-  }
-
-  factory ReviewData.fromJson(Map<String, dynamic> json) {
-    return ReviewData(
-      reviewUserName: json['reviewUserName'] ?? '',
-      reviewId: json['reviewId'] ?? '',
-      reviewText: json['reviewText'] ?? '',
-    );
   }
 }

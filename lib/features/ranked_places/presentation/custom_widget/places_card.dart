@@ -58,14 +58,11 @@ class PlacesCard extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Hero(
-                          tag: 'placesText',
-                          child: Text(
-                            placesModel.placeName ?? '',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
+                        Text(
+                          placesModel.placeName ?? '',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -77,7 +74,10 @@ class PlacesCard extends ConsumerWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              placesModel.reviewDtos.length.toString(),
+                              placesModel.reviewDtos
+                                  .where((element) => element.status == true)
+                                  .length
+                                  .toString(),
                               style: const TextStyle(
                                 fontSize: 16,
                               ),

@@ -12,9 +12,11 @@ class UserModel {
   String? phone;
   String? email;
   String? password;
+  String? token;
 
   UserModel(
-      {this.userId = 0,
+      {this.token,
+      this.userId = 0,
       this.userRoleId = 2,
       this.fullName = "",
       this.userRoleName = "",
@@ -25,6 +27,7 @@ class UserModel {
       this.password});
 
   UserModel.fromJson(Map<String, dynamic> json) {
+    token = json['token'];
     userId = json['userId'];
     userRoleId = json['userRoleId'];
     fullName = json['fullName'];
